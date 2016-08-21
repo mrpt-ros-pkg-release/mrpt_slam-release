@@ -1,0 +1,8 @@
+ros-jade-mrpt-icp-slam-2d (0.1.1-0trusty) trusty; urgency=high
+
+  * First public version, as a result of Vladislav Tananaev's GSoC2016 work.
+  * Contributors: Jose Luis Blanco, Logrus, Raphael Zack
+
+ -- Jose Luis Blanco Claraco <jlblanco@ual.es>  Sun, 21 Aug 2016 22:00:00 -0000
+
+
