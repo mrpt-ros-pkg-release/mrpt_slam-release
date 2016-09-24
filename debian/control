@@ -1,0 +1,13 @@
+Source: ros-kinetic-mrpt-rbpf-slam
+Section: misc
+Priority: extra
+Maintainer: Vladislav Tananaev <v.d.tananaev@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), libmrpt-dev, ros-kinetic-catkin, ros-kinetic-dynamic-reconfigure, ros-kinetic-mrpt-bridge, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-roslib, ros-kinetic-rospy, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf, ros-kinetic-visualization-msgs
+Homepage: http://www.mrpt.org/
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-mrpt-rbpf-slam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-dev, ros-kinetic-dynamic-reconfigure, ros-kinetic-mrpt-bridge, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-roslib, ros-kinetic-rospy, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf
+Description: This package is used for gridmap SLAM.
+ The interface is similar to gmapping (http://wiki.ros.org/gmapping) but the package supports different particle-filter algorithms, range-only SLAM, can work with several grid maps simultaneously and more.
