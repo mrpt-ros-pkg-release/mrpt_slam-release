@@ -1,3 +1,31 @@
+## mrpt_slam (kinetic) - 0.1.2-0
+
+The packages in the `mrpt_slam` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release mrpt_slam --track kinetic --rosdistro kinetic` on `Sat, 24 Sep 2016 21:17:03 -0000`
+
+These packages were released:
+- `mrpt_ekf_slam_2d`
+- `mrpt_ekf_slam_3d`
+- `mrpt_icp_slam_2d`
+- `mrpt_rbpf_slam`
+- `mrpt_slam`
+
+Version of package(s) in repository `mrpt_slam`:
+
+- upstream repository: https://github.com/mrpt-ros-pkg/mrpt_slam.git
+- release repository: https://github.com/mrpt-ros-pkg-release/mrpt_slam-release.git
+- rosdistro version: `0.1.1-0`
+- old version: `0.1.1-0`
+- new version: `0.1.2-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.21`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.5`
+- rosdistro version: `0.4.7`
+- vcstools version: `0.1.38`
+
+
 ## mrpt_slam (jade) - 0.1.2-0
 
 The packages in the `mrpt_slam` repository were released into the `jade` distro by running `/usr/bin/bloom-release mrpt_slam --track jade --rosdistro jade` on `Sat, 24 Sep 2016 21:12:25 -0000`
