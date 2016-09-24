@@ -1,9 +1,0 @@
-ros-jade-mrpt-ekf-slam-3d (0.1.1-0utopic) utopic; urgency=high
-
-  * First public version, as a result of Vladislav Tananaev's GSoC2016 work.
-  * Skip mrpt_ekf_slam_3d if version of MRPT is lower than 1.5.0.
-  * Contributors: Jose Luis Blanco, Logrus
-
- -- Jose Luis <jlblanco@ual.es>  Sun, 21 Aug 2016 22:00:00 -0000
-
-
