@@ -1,0 +1,12 @@
+Source: ros-indigo-mrpt-icp-slam-2d
+Section: misc
+Priority: extra
+Maintainer: Jose Luis Blanco Claraco <jlblanco@ual.es>
+Build-Depends: debhelper (>= 9.0.0), libmrpt-dev, mrpt-apps, ros-indigo-catkin, ros-indigo-dynamic-reconfigure, ros-indigo-mrpt-bridge, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-roslib, ros-indigo-rospy, ros-indigo-sensor-msgs, ros-indigo-std-msgs, ros-indigo-tf, ros-indigo-visualization-msgs
+Homepage: http://ros.org/wiki/mrpt_icp_slam_2d
+Standards-Version: 3.9.2
+
+Package: ros-indigo-mrpt-icp-slam-2d
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-dev, mrpt-apps, ros-indigo-dynamic-reconfigure, ros-indigo-mrpt-bridge, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-roslib, ros-indigo-rospy, ros-indigo-sensor-msgs, ros-indigo-std-msgs, ros-indigo-tf
+Description: mrpt_icp_slam_2d contains a wrapper on MRPT's 2D ICP-SLAM algorithms.
