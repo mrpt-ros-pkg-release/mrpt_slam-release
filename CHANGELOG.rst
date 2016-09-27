@@ -2,6 +2,9 @@
 Changelog for package mrpt_rbpf_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.3 (2016-09-27)
+------------------
+
 0.1.2 (2016-09-24)
 ------------------
 * Make formatting conform to ROS C++ Style Guide.
