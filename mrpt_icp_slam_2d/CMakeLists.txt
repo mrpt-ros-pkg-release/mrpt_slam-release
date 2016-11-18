@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(mrpt_icp_slam_2d)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-#c++ 11 standart
+#c++ 11 standard
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 IF($ENV{VERBOSE})
 	MESSAGE("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
@@ -48,6 +48,19 @@ TARGET_LINK_LIBRARIES(mrpt_icp_slam_2d ${MRPT_LIBS}
 ## Install ##
 #############
 
+# Mark executables and/or libraries for installation
+install(TARGETS mrpt_icp_slam_2d
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+# Mark other files for installation (e.g. launch and bag files, etc.)
+install(DIRECTORY
+  launch
+  tutorial
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 #############
 ## Testing ##
