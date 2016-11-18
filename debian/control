@@ -1,0 +1,12 @@
+Source: ros-jade-mrpt-slam
+Section: misc
+Priority: extra
+Maintainer: Vladislav Tananaev <v.d.tananaev@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin
+Homepage: http://ros.org/wiki/mrpt_slam
+Standards-Version: 3.9.2
+
+Package: ros-jade-mrpt-slam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jade-mrpt-ekf-slam-2d, ros-jade-mrpt-ekf-slam-3d, ros-jade-mrpt-icp-slam-2d, ros-jade-mrpt-rbpf-slam
+Description: mrpt_slam
