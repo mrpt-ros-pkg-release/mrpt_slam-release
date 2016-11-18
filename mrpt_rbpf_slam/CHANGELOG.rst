@@ -2,6 +2,12 @@
 Changelog for package mrpt_rbpf_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.5 (2016-11-18)
+------------------
+* Include ros/console hdr
+* Fix cmakelists typo
+* Contributors: Nikos Koukis
+
 0.1.3 (2016-09-27)
 ------------------
 
