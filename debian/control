@@ -1,0 +1,12 @@
+Source: ros-indigo-mrpt-graphslam-2d
+Section: misc
+Priority: extra
+Maintainer: Nikos Koukis <nickkouk@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), libmrpt-dev, mrpt-apps, ros-indigo-catkin, ros-indigo-geometry-msgs, ros-indigo-mrpt-bridge, ros-indigo-mrpt-msgs, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-sensor-msgs, ros-indigo-std-msgs, ros-indigo-tf
+Homepage: http://www.mrpt.org/
+Standards-Version: 3.9.2
+
+Package: ros-indigo-mrpt-graphslam-2d
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-dev, mrpt-apps, ros-indigo-geometry-msgs, ros-indigo-mrpt-bridge, ros-indigo-mrpt-msgs, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-sensor-msgs, ros-indigo-std-msgs, ros-indigo-tf
+Description: Implement graphSLAM using the mrpt-graphslam library, in an online fashion by directly reading measurements off ROS Topics.
