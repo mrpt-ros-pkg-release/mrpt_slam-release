@@ -49,11 +49,17 @@ void EKFslam::read_iniFile(std::string ini_filename)
   mapping.KF_options.dumpToConsole();
   mapping.options.dumpToConsole();
 
-#if MRPT_VERSION >= 0x150
+#if MRPT_VERSION < 0x150
+  mapping.options.verbose = true;
+#else
   log4cxx::LoggerPtr ros_logger = log4cxx::Logger::getLogger(ROSCONSOLE_DEFAULT_NAME);
   mapping.setVerbosityLevel(mrpt_bridge::rosLoggerLvlToMRPTLoggerLvl(ros_logger->getLevel()));
   mapping.logging_enable_console_output = false;
+#if MRPT_VERSION < 0x199
+  mapping.logRegisterCallback(static_cast<output_logger_callback_t>(&mrpt_bridge::mrptToROSLoggerCallback_mrpt_15));
+#else
   mapping.logRegisterCallback(static_cast<output_logger_callback_t>(&mrpt_bridge::mrptToROSLoggerCallback));
+#endif
 #endif
 
   // read display variables
@@ -61,7 +67,7 @@ void EKFslam::read_iniFile(std::string ini_filename)
   CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication", "CAMERA_3DSCENE_FOLLOWS_ROBOT", false);
 }
 
-void EKFslam::observation(CSensoryFramePtr _sf, CObservationOdometryPtr _odometry)
+void EKFslam::observation(CSensoryFrame::Ptr _sf, CObservationOdometry::Ptr _odometry)
 {
   action = CActionCollection::Create();
 
@@ -72,12 +78,12 @@ void EKFslam::observation(CSensoryFramePtr _sf, CObservationOdometryPtr _odometr
   {
     if (odomLastObservation_.empty())
     {
-      odomLastObservation_ = _odometry->odometry;
+	  odomLastObservation_ = mrpt::poses::CPose3D(_odometry->odometry);
     }
 
     mrpt::poses::CPose3D incOdoPose;
-    incOdoPose.inverseComposeFrom(_odometry->odometry, odomLastObservation_);
-    odomLastObservation_ = _odometry->odometry;
+	incOdoPose.inverseComposeFrom(mrpt::poses::CPose3D(_odometry->odometry), odomLastObservation_);
+    odomLastObservation_ = mrpt::poses::CPose3D(_odometry->odometry);
 #if MRPT_VERSION >= 0x150
     odom_move.computeFromOdometry(incOdoPose, motion_model_options_);
 #else
@@ -100,7 +106,7 @@ void EKFslam::init3Dwindow()
 void EKFslam::run3Dwindow()
 {
   // Save 3D view of the filter state:
-  if (SHOW_3D_LIVE && win3d.present())
+  if (SHOW_3D_LIVE && win3d)
   {
     mapping.getCurrentState(robotPose_, LMs_, LM_IDs_, fullState_, fullCov_);
     // Most of this code was copy and pase from ros::amcl
@@ -109,21 +115,21 @@ void EKFslam::run3Dwindow()
     const CPose3D robotPoseMean3D = CPose3D(robotPose_.mean);
 
     // Build the path:
-    meanPath.push_back(TPose3D(robotPoseMean3D));
+	meanPath.push_back(mrpt_bridge::p2t(robotPoseMean3D));
 
     // create the scene
-    COpenGLScenePtr scene3D = COpenGLScene::Create();
-    opengl::CGridPlaneXYPtr grid = opengl::CGridPlaneXY::Create(-1000, 1000, -1000, 1000, 0, 5);
+    COpenGLScene::Ptr scene3D = COpenGLScene::Create();
+    opengl::CGridPlaneXY::Ptr grid = opengl::CGridPlaneXY::Create(-1000, 1000, -1000, 1000, 0, 5);
     grid->setColor(0.4, 0.4, 0.4);
     scene3D->insert(grid);
 
     // Robot path:
-    opengl::CSetOfLinesPtr linesPath = opengl::CSetOfLines::Create();
+    opengl::CSetOfLines::Ptr linesPath = opengl::CSetOfLines::Create();
     linesPath->setColor(1, 0, 0);
     TPose3D init_pose;
     if (!meanPath.empty())
     {
-      init_pose = TPose3D(CPose3D(meanPath[0]));
+	  init_pose = mrpt_bridge::p2t(CPose3D(meanPath[0]));
       int path_decim = 0;
       for (vector<TPose3D>::iterator it = meanPath.begin(); it != meanPath.end(); ++it)
       {
@@ -132,7 +138,7 @@ void EKFslam::run3Dwindow()
         if (++path_decim > 10)
         {
           path_decim = 0;
-          mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 2.0f);
+          mrpt::opengl::CSetOfObjects::Ptr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 2.0f);
           xyz->setPose(CPose3D(*it));
           scene3D->insert(xyz);
         }
@@ -141,7 +147,7 @@ void EKFslam::run3Dwindow()
     }
 
     // finally a big corner for the latest robot pose:
-    mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.5);
+    mrpt::opengl::CSetOfObjects::Ptr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.5);
     xyz->setPose(robotPoseMean3D);
     scene3D->insert(xyz);
 
@@ -153,7 +159,7 @@ void EKFslam::run3Dwindow()
 
     // Draw latest data association:
     const CRangeBearingKFSLAM::TDataAssocInfo &da = mapping.getLastDataAssociation();
-    mrpt::opengl::CSetOfLinesPtr lins = mrpt::opengl::CSetOfLines::Create();
+    mrpt::opengl::CSetOfLines::Ptr lins = mrpt::opengl::CSetOfLines::Create();
     lins->setLineWidth(1.2);
     lins->setColor(1, 1, 1);
     for (std::map<observation_index_t, prediction_index_t>::const_iterator it = da.results.associations.begin();
@@ -173,11 +179,11 @@ void EKFslam::run3Dwindow()
     scene3D->insert(lins);
 
     // The current state of KF-SLAM:
-    opengl::CSetOfObjectsPtr objs = opengl::CSetOfObjects::Create();
+    opengl::CSetOfObjects::Ptr objs = opengl::CSetOfObjects::Create();
     mapping.getAs3DObject(objs);
     scene3D->insert(objs);
 
-    mrpt::opengl::COpenGLScenePtr &scn = win3d->get3DSceneAndLock();
+    mrpt::opengl::COpenGLScene::Ptr &scn = win3d->get3DSceneAndLock();
     scn = scene3D;
 
     win3d->unlockAccess3DScene();
