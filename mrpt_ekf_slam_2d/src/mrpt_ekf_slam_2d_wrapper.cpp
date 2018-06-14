@@ -92,7 +92,7 @@ void EKFslamWrapper::init()
   init3Dwindow();
 }
 
-void EKFslamWrapper::odometryForCallback(CObservationOdometryPtr& _odometry, const std_msgs::Header& _msg_header)
+void EKFslamWrapper::odometryForCallback(CObservationOdometry::Ptr& _odometry, const std_msgs::Header& _msg_header)
 {
   mrpt::poses::CPose3D poseOdom;
   if (this->waitForTransform(poseOdom, odom_frame_id, base_frame_id, _msg_header.stamp, ros::Duration(1)))
@@ -120,7 +120,6 @@ void EKFslamWrapper::updateSensorPose(std::string _frame_id)
     pose.x() = translation.x();
     pose.y() = translation.y();
     pose.z() = translation.z();
-    double roll, pitch, yaw;
     tf::Matrix3x3 Rsrc(quat);
     CMatrixDouble33 Rdes;
     for (int c = 0; c < 3; c++)
@@ -164,7 +163,7 @@ void EKFslamWrapper::landmarkCallback(const mrpt_msgs::ObservationRangeBearing& 
 #else
   using namespace mrpt::slam;
 #endif
-  CObservationBearingRangePtr landmark = CObservationBearingRange::Create();
+  CObservationBearingRange::Ptr landmark = CObservationBearingRange::Create();
 
   if (landmark_poses_.find(_msg.header.frame_id) == landmark_poses_.end())
   {
@@ -176,10 +175,10 @@ void EKFslamWrapper::landmarkCallback(const mrpt_msgs::ObservationRangeBearing& 
     mrpt_bridge::convert(_msg, landmark_poses_[_msg.header.frame_id], *landmark);
 
     sf = CSensoryFrame::Create();
-    CObservationOdometryPtr odometry;
+    CObservationOdometry::Ptr odometry;
     odometryForCallback(odometry, _msg.header);
 
-    CObservationPtr obs = CObservationPtr(landmark);
+    CObservation::Ptr obs = CObservation::Ptr(landmark);
     sf->insert(obs);
     observation(sf, odometry);
     timeLastUpdate_ = sf->getObservationByIndex(0)->timestamp;
@@ -187,12 +186,13 @@ void EKFslamWrapper::landmarkCallback(const mrpt_msgs::ObservationRangeBearing& 
     tictac.Tic();
     mapping.processActionObservation(action, sf);
     t_exec = tictac.Tac();
-    printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+    ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
     ros::Duration(rawlog_play_delay).sleep();
     mapping.getCurrentState(robotPose_, LMs_, LM_IDs_, fullState_, fullCov_);
     viz_state();
     viz_dataAssociation();
     run3Dwindow();
+    publishTF();
   }
 }
 
@@ -205,9 +205,15 @@ bool EKFslamWrapper::rawlogPlay()
   else
   {
     size_t rawlogEntry = 0;
+#if MRPT_VERSION>=0x199
+    #include <mrpt/serialization/CArchive.h>
+    CFileGZInputStream rawlog_stream(rawlog_filename);
+    auto rawlogFile = mrpt::serialization::archiveFrom(rawlog_stream);
+#else
     CFileGZInputStream rawlogFile(rawlog_filename);
-    CActionCollectionPtr action;
-    CSensoryFramePtr observations;
+#endif
+    CActionCollection::Ptr action;
+    CSensoryFrame::Ptr observations;
 
     for (;;)
     {
@@ -220,7 +226,7 @@ bool EKFslamWrapper::rawlogPlay()
         tictac.Tic();
         mapping.processActionObservation(action, observations);
         t_exec = tictac.Tac();
-        printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+        ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
         ros::Duration(rawlog_play_delay).sleep();
         mapping.getCurrentState(robotPose_, LMs_, LM_IDs_, fullState_, fullCov_);
 
@@ -371,18 +377,18 @@ void EKFslamWrapper::viz_state()
   marker.lifetime = ros::Duration(0);
 
   // get the covariance matrix 2x2 for each ellipsoid including robot pose
-  mrpt::opengl::CSetOfObjectsPtr objs;
+  mrpt::opengl::CSetOfObjects::Ptr objs;
   objs = mrpt::opengl::CSetOfObjects::Create();
   mapping.getAs3DObject(objs);
 
   // Count the number of landmarks
-  int objs_counter = 0;
+  unsigned int objs_counter = 0;
   while (objs->getByClass<mrpt::opengl::CEllipsoid>(objs_counter))
   {
     objs_counter++;
   }
 
-  mrpt::opengl::CEllipsoidPtr landmark;
+  mrpt::opengl::CEllipsoid::Ptr landmark;
   for (size_t i = 0; i < objs_counter; i++)
   {
     landmark = objs->getByClass<mrpt::opengl::CEllipsoid>(i);
@@ -391,7 +397,7 @@ void EKFslamWrapper::viz_state()
     float quantiles = landmark->getQuantiles();
 
     // mean position
-    CPose3D pose = landmark->getPose();  // pose of the robot and landmarks (x,y,z=0)
+	CPose3D pose = mrpt::poses::CPose3D(landmark->getPose());  // pose of the robot and landmarks (x,y,z=0)
 
     // covariance ellipses
     tf::Quaternion orientation;
@@ -456,11 +462,7 @@ void EKFslamWrapper::publishTF()
   mapping.getCurrentState(robotPose_, LMs_, LM_IDs_, fullState_, fullCov_);
   // Most of this code was copy and pase from ros::amcl
   mrpt::poses::CPose3D robotPose;
-
   robotPose = CPose3D(robotPose_.mean);
-  // mapBuilder->mapPDF.getEstimatedPosePDF(curPDF);
-
-  // curPDF.getMean(robotPose);
 
   tf::Stamped<tf::Pose> odom_to_map;
   tf::Transform tmp_tf;
@@ -485,7 +487,6 @@ void EKFslamWrapper::publishTF()
 
   // We want to send a transform that is good up until a
   // tolerance time so that odom can be used
-
   ros::Duration transform_tolerance_(0.1);
   ros::Time transform_expiration = (stamp + transform_tolerance_);
   tf::StampedTransform tmp_tf_stamped(latest_tf_.inverse(), transform_expiration, global_frame_id, odom_frame_id);
