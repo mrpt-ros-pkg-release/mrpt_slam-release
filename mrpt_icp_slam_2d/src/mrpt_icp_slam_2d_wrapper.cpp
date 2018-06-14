@@ -64,7 +64,11 @@ void ICPslamWrapper::read_iniFile(std::string ini_filename)
   log4cxx::LoggerPtr ros_logger = log4cxx::Logger::getLogger(ROSCONSOLE_DEFAULT_NAME);
   mapBuilder.setVerbosityLevel(mrpt_bridge::rosLoggerLvlToMRPTLoggerLvl(ros_logger->getLevel()));
   mapBuilder.logging_enable_console_output = false;
+#if MRPT_VERSION < 0x199
+  mapBuilder.logRegisterCallback(static_cast<output_logger_callback_t>(&mrpt_bridge::mrptToROSLoggerCallback_mrpt_15));
+#else
   mapBuilder.logRegisterCallback(static_cast<output_logger_callback_t>(&mrpt_bridge::mrptToROSLoggerCallback));
+#endif
 #endif
   mapBuilder.options.alwaysInsertByClass.fromString(
       iniFile.read_string("MappingApplication", "alwaysInsertByClass", ""));
@@ -103,6 +107,12 @@ void ICPslamWrapper::get_param()
 
   n_.param<std::string>("sensor_source", sensor_source, "scan");
   ROS_INFO("sensor_source: %s", sensor_source.c_str());
+
+  n_.param("trajectory_update_rate", trajectory_update_rate, 10.0);
+  ROS_INFO("trajectory_update_rate: %f", trajectory_update_rate);
+
+  n_.param("trajectory_publish_rate", trajectory_publish_rate, 5.0);
+  ROS_INFO("trajectory_publish_rate: %f", trajectory_publish_rate);
 }
 void ICPslamWrapper::init3Dwindow()
 {
@@ -120,7 +130,7 @@ void ICPslamWrapper::init3Dwindow()
 void ICPslamWrapper::run3Dwindow()
 {
   // Create 3D window if requested (the code is copied from ../mrpt/apps/icp-slam/icp-slam_main.cpp):
-  if (SHOW_PROGRESS_3D_REAL_TIME && win3D_.present())
+  if (SHOW_PROGRESS_3D_REAL_TIME && win3D_)
   {
     // get currently builded map
     metric_map_ = mapBuilder.getCurrentlyBuiltMetricMap();
@@ -129,11 +139,11 @@ void ICPslamWrapper::run3Dwindow()
 
     CPose3D robotPose;
     mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
-    COpenGLScenePtr scene = COpenGLScene::Create();
+    COpenGLScene::Ptr scene = COpenGLScene::Create();
 
-    COpenGLViewportPtr view = scene->getViewport("main");
+    COpenGLViewport::Ptr view = scene->getViewport("main");
 
-    COpenGLViewportPtr view_map = scene->createViewport("mini-map");
+    COpenGLViewport::Ptr view_map = scene->createViewport("mini-map");
     view_map->setBorderSize(2);
     view_map->setViewportPosition(0.01, 0.01, 0.35, 0.35);
     view_map->setTransparent(false);
@@ -148,10 +158,10 @@ void ICPslamWrapper::run3Dwindow()
     }
 
     // The ground:
-    mrpt::opengl::CGridPlaneXYPtr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
+    mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
     groundPlane->setColor(0.4, 0.4, 0.4);
     view->insert(groundPlane);
-    view_map->insert(CRenderizablePtr(groundPlane));  // A copy
+    view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
 
     // The camera pointing to the current robot pose:
     if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
@@ -166,12 +176,12 @@ void ICPslamWrapper::run3Dwindow()
 
     // The maps:
     {
-      opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
+      opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
       metric_map_->getAs3DObject(obj);
       view->insert(obj);
 
       // Only the point map:
-      opengl::CSetOfObjectsPtr ptsMap = opengl::CSetOfObjects::Create();
+      opengl::CSetOfObjects::Ptr ptsMap = opengl::CSetOfObjects::Create();
       if (metric_map_->m_pointsMaps.size())
       {
         metric_map_->m_pointsMaps[0]->getAs3DObject(ptsMap);
@@ -180,21 +190,21 @@ void ICPslamWrapper::run3Dwindow()
     }
 
     // Draw the robot path:
-    CPose3DPDFPtr posePDF = mapBuilder.getCurrentPoseEstimation();
+    CPose3DPDF::Ptr posePDF = mapBuilder.getCurrentPoseEstimation();
     CPose3D curRobotPose;
     posePDF->getMean(curRobotPose);
     {
-      opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+      opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
       obj->setPose(curRobotPose);
       view->insert(obj);
     }
     {
-      opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+      opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
       obj->setPose(curRobotPose);
       view_map->insert(obj);
     }
 
-    opengl::COpenGLScenePtr &ptrScene = win3D_->get3DSceneAndLock();
+    opengl::COpenGLScene::Ptr &ptrScene = win3D_->get3DSceneAndLock();
     ptrScene = scene;
 
     win3D_->unlockAccess3DScene();
@@ -213,7 +223,7 @@ void ICPslamWrapper::run3Dwindow()
       {
         if (IS_CLASS(observation, CObservation2DRangeScan))
         {
-          lst_current_laser_scans.push_back(CObservation2DRangeScanPtr(observation));
+          lst_current_laser_scans.push_back(mrpt::ptr_cast<CObservation2DRangeScan>::from(observation));
         }
       }
       else
@@ -221,7 +231,7 @@ void ICPslamWrapper::run3Dwindow()
         // Rawlog in the Actions-SF format:
         for (size_t i = 0;; i++)
         {
-          CObservation2DRangeScanPtr new_obs = observations->getObservationByClass<CObservation2DRangeScan>(i);
+          CObservation2DRangeScan::Ptr new_obs = observations->getObservationByClass<CObservation2DRangeScan>(i);
           if (!new_obs)
             break;  // There're no more scans
           else
@@ -236,7 +246,7 @@ void ICPslamWrapper::run3Dwindow()
       for (size_t i = 0; i < lst_current_laser_scans.size(); i++)
       {
         // Create opengl object and load scan data from the scan observation:
-        opengl::CPlanarLaserScanPtr obj = opengl::CPlanarLaserScan::Create();
+        opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
         obj->setScan(*lst_current_laser_scans[i]);
         obj->setPose(curRobotPose);
         obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
@@ -269,8 +279,16 @@ void ICPslamWrapper::init()
   // publish point map
   pub_point_cloud_ = n_.advertise<sensor_msgs::PointCloud>("PointCloudMap", 1, true);
 
+  trajectory_pub_ = n_.advertise<nav_msgs::Path>("trajectory", 1, true);
+
   // robot pose
   pub_pose_ = n_.advertise<geometry_msgs::PoseStamped>("robot_pose", 1);
+
+  update_trajector_timer = n_.createTimer(ros::Duration(1.0 / trajectory_update_rate),
+          &ICPslamWrapper::updateTrajectoryTimerCallback, this ,false);
+
+  publish_trajectory_timer = n_.createTimer(ros::Duration(1.0 / trajectory_publish_rate),
+          &ICPslamWrapper::publishTrajectoryTimerCallback, this, false);
 
   // read sensor topics
   std::vector<std::string> lstSources;
@@ -304,7 +322,7 @@ void ICPslamWrapper::laserCallback(const sensor_msgs::LaserScan &_msg)
 #else
   using namespace mrpt::slam;
 #endif
-  CObservation2DRangeScanPtr laser = CObservation2DRangeScan::Create();
+  CObservation2DRangeScan::Ptr laser = CObservation2DRangeScan::Create();
   if (laser_poses_.find(_msg.header.frame_id) == laser_poses_.end())
   {
     updateSensorPose(_msg.header.frame_id);
@@ -313,15 +331,16 @@ void ICPslamWrapper::laserCallback(const sensor_msgs::LaserScan &_msg)
   {
     mrpt::poses::CPose3D pose = laser_poses_[_msg.header.frame_id];
     mrpt_bridge::convert(_msg, laser_poses_[_msg.header.frame_id], *laser);
-    // CObservationPtr obs = CObservationPtr(laser);
-    observation = CObservationPtr(laser);
+    // CObservation::Ptr obs = CObservation::Ptr(laser);
+    observation = CObservation::Ptr(laser);
     stamp = ros::Time(0);
     tictac.Tic();
     mapBuilder.processObservation(observation);
     t_exec = tictac.Tac();
-    printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+    ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
     run3Dwindow();
+    publishTF();
     publishMapPose();
   }
 }
@@ -354,7 +373,7 @@ void ICPslamWrapper::publishMapPose()
   mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
   // publish pose
-  geometry_msgs::PoseStamped pose;
+  // geometry_msgs::PoseStamped pose;
   pose.header.frame_id = global_frame_id;
 
   // the pose
@@ -378,7 +397,6 @@ void ICPslamWrapper::updateSensorPose(std::string _frame_id)
     pose.x() = translation.x();
     pose.y() = translation.y();
     pose.z() = translation.z();
-    double roll, pitch, yaw;
     tf::Matrix3x3 Rsrc(quat);
     CMatrixDouble33 Rdes;
     for (int c = 0; c < 3; c++)
@@ -402,8 +420,14 @@ bool ICPslamWrapper::rawlogPlay()
   else
   {
     size_t rawlogEntry = 0;
+#if MRPT_VERSION>=0x199
+#include <mrpt/serialization/CArchive.h>
+    CFileGZInputStream rawlog_stream(rawlog_filename);
+    auto rawlogFile = mrpt::serialization::archiveFrom(rawlog_stream);
+#else
     CFileGZInputStream rawlogFile(rawlog_filename);
-    CActionCollectionPtr action;
+#endif
+    CActionCollection::Ptr action;
 
     for (;;)
     {
@@ -413,7 +437,7 @@ bool ICPslamWrapper::rawlogPlay()
         {
           break;  // file EOF
         }
-        isObsBasedRawlog = observation.present();
+        isObsBasedRawlog = (bool)observation;
         // Execute:
         // ----------------------------------------
         tictac.Tic();
@@ -422,7 +446,7 @@ bool ICPslamWrapper::rawlogPlay()
         else
           mapBuilder.processActionObservation(*action, *observations);
         t_exec = tictac.Tac();
-        printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+        ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
         ros::Duration(rawlog_play_delay).sleep();
 
@@ -455,7 +479,7 @@ bool ICPslamWrapper::rawlogPlay()
         }
 
         // publish pose
-        geometry_msgs::PoseStamped pose;
+        // geometry_msgs::PoseStamped pose;
         pose.header.frame_id = global_frame_id;
 
         // the pose
@@ -468,6 +492,7 @@ bool ICPslamWrapper::rawlogPlay()
       }
 
       run3Dwindow();
+      ros::spinOnce();
     }
 
     // if there is mrpt_gui it will wait until push any key in order to close the window
@@ -507,4 +532,18 @@ void ICPslamWrapper::publishTF()
   tf::StampedTransform tmp_tf_stamped(latest_tf_.inverse(), stamp, global_frame_id, odom_frame_id);
 
   tf_broadcaster_.sendTransform(tmp_tf_stamped);
+}
+
+void ICPslamWrapper::updateTrajectoryTimerCallback(const ros::TimerEvent& event)
+{
+    ROS_DEBUG("update trajectory");
+    path.header.frame_id = global_frame_id;
+    path.header.stamp = ros::Time(0);
+    path.poses.push_back(pose);
+}
+
+void ICPslamWrapper::publishTrajectoryTimerCallback(const ros::TimerEvent& event)
+{
+    ROS_DEBUG("publish trajectory");
+    trajectory_pub_.publish(path);
 }

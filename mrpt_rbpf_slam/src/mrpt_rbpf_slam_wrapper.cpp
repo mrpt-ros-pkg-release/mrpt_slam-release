@@ -94,7 +94,7 @@ void PFslamWrapper::init()
   init3Dwindow();
 }
 
-void PFslamWrapper::odometryForCallback(CObservationOdometryPtr& _odometry, const std_msgs::Header& _msg_header)
+void PFslamWrapper::odometryForCallback(CObservationOdometry::Ptr& _odometry, const std_msgs::Header& _msg_header)
 {
   mrpt::poses::CPose3D poseOdom;
   if (this->waitForTransform(poseOdom, odom_frame_id, base_frame_id, _msg_header.stamp, ros::Duration(1)))
@@ -116,13 +116,16 @@ bool PFslamWrapper::waitForTransform(mrpt::poses::CPose3D& des, const std::strin
   tf::StampedTransform transform;
   try
   {
-    listenerTF_.waitForTransform(target_frame, source_frame, time, polling_sleep_duration);
+    listenerTF_.waitForTransform(target_frame, source_frame, time, timeout, polling_sleep_duration);
     listenerTF_.lookupTransform(target_frame, source_frame, time, transform);
   }
-  catch (tf::TransformException)
+  catch (tf::TransformException ex)
   {
-    ROS_INFO("Failed to get transform target_frame (%s) to source_frame (%s)", target_frame.c_str(),
-             source_frame.c_str());
+    ROS_ERROR(
+      "Failed to get transform target_frame (%s) to source_frame (%s). TransformException: %s",
+      target_frame.c_str(),
+      source_frame.c_str(),
+      ex.what());
     return false;
   }
   mrpt_bridge::convert(transform, des);
@@ -137,7 +140,7 @@ void PFslamWrapper::laserCallback(const sensor_msgs::LaserScan& _msg)
 #else
   using namespace mrpt::slam;
 #endif
-  CObservation2DRangeScanPtr laser = CObservation2DRangeScan::Create();
+  CObservation2DRangeScan::Ptr laser = CObservation2DRangeScan::Create();
 
   if (laser_poses_.find(_msg.header.frame_id) == laser_poses_.end())
   {
@@ -149,10 +152,10 @@ void PFslamWrapper::laserCallback(const sensor_msgs::LaserScan& _msg)
     mrpt_bridge::convert(_msg, laser_poses_[_msg.header.frame_id], *laser);
 
     sf = CSensoryFrame::Create();
-    CObservationOdometryPtr odometry;
+    CObservationOdometry::Ptr odometry;
     odometryForCallback(odometry, _msg.header);
 
-    CObservationPtr obs = CObservationPtr(laser);
+    CObservation::Ptr obs = CObservation::Ptr(laser);
     sf->insert(obs);
     observation(sf, odometry);
     timeLastUpdate_ = sf->getObservationByIndex(0)->timestamp;
@@ -160,9 +163,10 @@ void PFslamWrapper::laserCallback(const sensor_msgs::LaserScan& _msg)
     tictac.Tic();
     mapBuilder->processActionObservation(*action, *sf);
     t_exec = tictac.Tac();
-    printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+    ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
     publishMapPose();
     run3Dwindow();
+    publishTF();
   }
 }
 
@@ -175,7 +179,7 @@ void PFslamWrapper::callbackBeacon(const mrpt_msgs::ObservationRangeBeacon& _msg
   using namespace mrpt::slam;
 #endif
 
-  CObservationBeaconRangesPtr beacon = CObservationBeaconRanges::Create();
+  CObservationBeaconRanges::Ptr beacon = CObservationBeaconRanges::Create();
   if (beacon_poses_.find(_msg.header.frame_id) == beacon_poses_.end())
   {
     updateSensorPose(_msg.header.frame_id);
@@ -185,10 +189,10 @@ void PFslamWrapper::callbackBeacon(const mrpt_msgs::ObservationRangeBeacon& _msg
     mrpt_bridge::convert(_msg, beacon_poses_[_msg.header.frame_id], *beacon);
 
     sf = CSensoryFrame::Create();
-    CObservationOdometryPtr odometry;
+    CObservationOdometry::Ptr odometry;
     odometryForCallback(odometry, _msg.header);
 
-    CObservationPtr obs = CObservationPtr(beacon);
+    CObservation::Ptr obs = CObservation::Ptr(beacon);
     sf->insert(obs);
     observation(sf, odometry);
     timeLastUpdate_ = sf->getObservationByIndex(0)->timestamp;
@@ -196,7 +200,7 @@ void PFslamWrapper::callbackBeacon(const mrpt_msgs::ObservationRangeBeacon& _msg
     tictac.Tic();
     mapBuilder->processActionObservation(*action, *sf);
     t_exec = tictac.Tac();
-    printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+    ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
     publishMapPose();
     run3Dwindow();
@@ -220,7 +224,7 @@ void PFslamWrapper::publishMapPose()
   // if I received new beacon (range only) map
   if (metric_map_->m_beaconMap)
   {
-    mrpt::opengl::CSetOfObjectsPtr objs;
+    mrpt::opengl::CSetOfObjects::Ptr objs;
 
     objs = mrpt::opengl::CSetOfObjects::Create();
     // Get th map as the set of 3D objects
@@ -231,18 +235,18 @@ void PFslamWrapper::publishMapPose()
     poseArrayBeacons.header.stamp = ros::Time::now();
 
     // Count the number of beacons
-    int objs_counter = 0;
+    unsigned int objs_counter = 0;
     while (objs->getByClass<mrpt::opengl::CEllipsoid>(objs_counter))
     {
       objs_counter++;
     }
     poseArrayBeacons.poses.resize(objs_counter);
-    mrpt::opengl::CEllipsoidPtr beacon_particle;
+    mrpt::opengl::CEllipsoid::Ptr beacon_particle;
 
     for (size_t i = 0; i < objs_counter; i++)
     {
       beacon_particle = objs->getByClass<mrpt::opengl::CEllipsoid>(i);
-      mrpt_bridge::convert(beacon_particle->getPose(), poseArrayBeacons.poses[i]);
+      mrpt_bridge::convert(mrpt::poses::CPose3D(beacon_particle->getPose()), poseArrayBeacons.poses[i]);
       viz_beacons.push_back(beacon_particle);
     }
     pub_Particles_Beacons_.publish(poseArrayBeacons);
@@ -293,7 +297,7 @@ void PFslamWrapper::vizBeacons()
   marker.color.r = 1.0;
   marker.color.g = 0.0;
 
-  for (int i = 0; i < viz_beacons.size(); i++)
+  for (unsigned int i = 0; i < viz_beacons.size(); i++)
   {
     CPose3D meanPose(viz_beacons[i]->getPose());
     marker.type = visualization_msgs::Marker::SPHERE;
@@ -338,7 +342,6 @@ void PFslamWrapper::updateSensorPose(std::string _frame_id)
     pose.x() = translation.x();
     pose.y() = translation.y();
     pose.z() = translation.z();
-    double roll, pitch, yaw;
     tf::Matrix3x3 Rsrc(quat);
     CMatrixDouble33 Rdes;
     for (int c = 0; c < 3; c++)
@@ -363,14 +366,14 @@ bool PFslamWrapper::rawlogPlay()
   }
   else
   {
-    for (int i = 0; i < data.size(); i++)
+    for (unsigned int i = 0; i < data.size(); i++)
     {
       if (ros::ok())
       {
         tictac.Tic();
         mapBuilder->processActionObservation(data[i].first, data[i].second);
         t_exec = tictac.Tac();
-        printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
+        ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
         ros::Duration(rawlog_play_delay).sleep();
 
@@ -390,7 +393,7 @@ bool PFslamWrapper::rawlogPlay()
         // if I received new beacon (range only) map
         if (metric_map_->m_beaconMap)
         {
-          mrpt::opengl::CSetOfObjectsPtr objs;
+          mrpt::opengl::CSetOfObjects::Ptr objs;
           objs = mrpt::opengl::CSetOfObjects::Create();
           metric_map_->m_beaconMap->getAs3DObject(objs);
 
@@ -398,18 +401,18 @@ bool PFslamWrapper::rawlogPlay()
           poseArrayBeacons.header.frame_id = global_frame_id;
           poseArrayBeacons.header.stamp = ros::Time::now();
 
-          int objs_counter = 0;
+          unsigned int objs_counter = 0;
           while (objs->getByClass<mrpt::opengl::CEllipsoid>(objs_counter))
           {
             objs_counter++;
           }
           poseArrayBeacons.poses.resize(objs_counter);
-          mrpt::opengl::CEllipsoidPtr beacon_particle;
+          mrpt::opengl::CEllipsoid::Ptr beacon_particle;
 
           for (size_t i = 0; i < objs_counter; i++)
           {
             beacon_particle = objs->getByClass<mrpt::opengl::CEllipsoid>(i);
-            mrpt_bridge::convert(beacon_particle->getPose(), poseArrayBeacons.poses[i]);
+            mrpt_bridge::convert(mrpt::poses::CPose3D(beacon_particle->getPose()), poseArrayBeacons.poses[i]);
             viz_beacons.push_back(beacon_particle);
           }
           pub_Particles_Beacons_.publish(poseArrayBeacons);
@@ -459,10 +462,13 @@ void PFslamWrapper::publishTF()
     tf::Stamped<tf::Pose> tmp_tf_stamped(tmp_tf.inverse(), stamp, base_frame_id);
     listenerTF_.transformPose(odom_frame_id, tmp_tf_stamped, odom_to_map);
   }
-  catch (tf::TransformException)
+  catch (tf::TransformException ex)
   {
-    ROS_INFO("Failed to subtract global_frame (%s) from odom_frame (%s)", global_frame_id.c_str(),
-             odom_frame_id.c_str());
+    ROS_ERROR(
+      "Failed to subtract global_frame (%s) from odom_frame (%s). TransformException: %s",
+      global_frame_id.c_str(),
+      odom_frame_id.c_str(),
+      ex.what());
     return;
   }
 
