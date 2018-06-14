@@ -1,17 +1,43 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.1)
+set (CMAKE_CXX_STANDARD 14)
 project(mrpt_rbpf_slam)
 
-#c++ 11 standard
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-IF($ENV{VERBOSE})
-	MESSAGE("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-endif()
-
 #find catkin packages
-find_package(catkin REQUIRED COMPONENTS roslib roscpp tf std_msgs nav_msgs sensor_msgs visualization_msgs mrpt_bridge dynamic_reconfigure)
+find_package(catkin REQUIRED COMPONENTS
+  roslib
+  roscpp
+  tf
+  std_msgs
+  nav_msgs
+  sensor_msgs
+  visualization_msgs
+  mrpt_bridge
+  dynamic_reconfigure
+  roslaunch)
 
 #find mrpt packages
-find_package(MRPT REQUIRED base gui obs slam)
+find_package(MRPT 1.5 REQUIRED)
+message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
+if (MRPT_VERSION VERSION_LESS 1.9.9)
+	find_package(MRPT REQUIRED base gui obs slam)
+else()
+	find_package(MRPT REQUIRED gui obs slam)
+endif()
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+	# High level of warnings.
+	# The -Wno-long-long is required in 64bit systems when including sytem headers.
+	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
+	add_compile_options(-Wall -Wno-long-long -Wno-variadic-macros)
+	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
+	if (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0")
+		add_compile_options(-Wno-ignored-attributes -Wno-int-in-bool-context)
+	endif()
+endif()
+
+IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+  add_compile_options(-O3)
+ENDIF()
 
 #Include directories
 INCLUDE_DIRECTORIES(
@@ -20,7 +46,10 @@ INCLUDE_DIRECTORIES(
 )
 
 
-catkin_package( CATKIN_DEPENDS )
+catkin_package(
+	CATKIN_DEPENDS
+	nav_msgs sensor_msgs std_msgs
+)
 
 ###########
 ## Build ##
@@ -64,5 +93,5 @@ install(DIRECTORY
 #############
 ## Testing ##
 #############
-
-
+# Add testing for *.launch files
+roslaunch_add_file_check(launch)

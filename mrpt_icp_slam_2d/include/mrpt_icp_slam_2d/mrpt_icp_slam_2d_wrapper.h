@@ -16,7 +16,6 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -37,6 +36,7 @@
 // add ros msgs
 #include <nav_msgs/OccupancyGrid.h>
 #include "nav_msgs/MapMetaData.h"
+#include <nav_msgs/Path.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Header.h>
 #include <std_msgs/Int32.h>
@@ -164,6 +164,18 @@ public:
     *@param frame_id the frame of the sensors
     */
   void updateSensorPose(std::string _frame_id);
+  /**
+    * @brief  the callback for update trajectory
+    *
+    *@param event the event for update trajectory
+    */
+  void updateTrajectoryTimerCallback(const ros::TimerEvent& event);
+  /**
+    * @brief  the callback for publish trajectory
+    *
+    *@param event the event for publish trajectory
+    */
+  void publishTrajectoryTimerCallback(const ros::TimerEvent& event);
 
 protected:
   CMetricMapBuilderICP mapBuilder;  ///< icp slam class
@@ -176,6 +188,16 @@ protected:
   std::string global_frame_id;  ///< /map frame
   std::string odom_frame_id;    ///< /odom frame
   std::string base_frame_id;    ///< robot frame
+  geometry_msgs::PoseStamped pose; ///< the robot pose
+
+  ros::Publisher trajectory_pub_;  ///< trajectory publisher
+  nav_msgs::Path path;             ///< trajectory path
+
+  ros::Timer update_trajector_timer;   ///< timer for update trajectory
+  ros::Timer publish_trajectory_timer; ///< timer for publish trajectory
+
+  double trajectory_update_rate;    ///< trajectory update rate(Hz)
+  double trajectory_publish_rate;   ///< trajectory publish rate(Hz)
 
   // Sensor source
   std::string sensor_source;                                 ///< 2D laser scans
@@ -184,8 +206,8 @@ protected:
   // Subscribers
   std::vector<ros::Subscriber> sensorSub_;  ///< list of sensors topics
 
-  CMultiMetricMap *metric_map_;  ///<receive map after iteration of SLAM to metric map
-  CPose3DPDFPtr curPDF;          ///<current robot pose
+  const CMultiMetricMap *metric_map_;  ///<receive map after iteration of SLAM to metric map
+  // CPose3DPDF::Ptr curPDF;          ///<current robot pose
   ros::Publisher pub_map_, pub_metadata_, pub_pose_, pub_point_cloud_;  ///<publishers for map and pose particles
 
   tf::TransformListener listenerTF_;         ///<transform listener
@@ -193,15 +215,15 @@ protected:
 
   CTicTac tictac;  ///<timer for SLAM performance evaluation
   float t_exec;    ///<the time which take one SLAM update execution
-  CSensoryFramePtr observations;
-  CObservationPtr observation;
+  CSensoryFrame::Ptr observations;
+  CObservation::Ptr observation;
   mrpt::system::TTimeStamp timeLastUpdate_;  ///< last update of the pose and map
 
   ros::Time stamp;  ///< timestamp for observations
 
-  mrpt::gui::CDisplayWindow3DPtr win3D_;  ///<MRPT window
+  mrpt::gui::CDisplayWindow3D::Ptr win3D_;  ///<MRPT window
 
-  std::vector<CObservation2DRangeScanPtr> lst_current_laser_scans;
+  std::vector<CObservation2DRangeScan::Ptr> lst_current_laser_scans;
   bool isObsBasedRawlog;
   bool SHOW_PROGRESS_3D_REAL_TIME;
   int SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS;

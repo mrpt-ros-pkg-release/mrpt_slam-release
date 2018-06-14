@@ -34,7 +34,7 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/random.h>
-#include <mrpt/system/threads.h>
+
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -126,7 +126,7 @@ public:
   * @param _odometry odometry for received observation
   * @param _msg_header timestamp of the observation
   */
-  void odometryForCallback(CObservationOdometryPtr& _odometry, const std_msgs::Header& _msg_header);
+  void odometryForCallback(CObservationOdometry::Ptr& _odometry, const std_msgs::Header& _msg_header);
   /**
   * @brief callback function for the landmarks
   *
