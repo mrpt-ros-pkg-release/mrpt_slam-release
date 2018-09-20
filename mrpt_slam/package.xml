@@ -1,6 +1,7 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>mrpt_slam</name>
-  <version>0.1.6</version>
+  <version>0.1.8</version>
   <description>mrpt_slam</description>
   <maintainer email="v.d.tananaev@gmail.com">Vladislav Tananaev</maintainer>
   <maintainer email="jlblanco@ual.es">Jose Luis Blanco Claraco</maintainer>
@@ -16,14 +17,11 @@
   <!-- Dependencies which this package needs to build itself. -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Dependencies needed to compile this package. -->
-
-
-  <!-- Dependencies needed after this package is compiled. -->
-  <run_depend>mrpt_icp_slam_2d</run_depend>
-  <run_depend>mrpt_ekf_slam_3d</run_depend>
-  <run_depend>mrpt_ekf_slam_2d</run_depend>
-  <run_depend>mrpt_rbpf_slam</run_depend>
+  <exec_depend>mrpt_ekf_slam_3d</exec_depend>
+  <exec_depend>mrpt_ekf_slam_2d</exec_depend>
+  <exec_depend>mrpt_icp_slam_2d</exec_depend>
+  <exec_depend>mrpt_graphslam_2d</exec_depend>
+  <exec_depend>mrpt_rbpf_slam</exec_depend>
 
   <export>
       <metapackage/>
