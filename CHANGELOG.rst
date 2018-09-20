@@ -2,6 +2,14 @@
 Changelog for package mrpt_rbpf_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.8 (2018-09-21)
+------------------
+* Make catkin_lint clean
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.7 (2018-09-20)
+------------------
+
 0.1.6 (2018-06-14)
 ------------------
 * Merge pull request `#42 <https://github.com/mrpt-ros-pkg/mrpt_slam/issues/42>`_ from MaxGsomGsom/master
