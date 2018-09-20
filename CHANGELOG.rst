@@ -2,6 +2,16 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.8 (2018-09-21)
+------------------
+* Make catkin_lint clean
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.7 (2018-09-20)
+------------------
+* metapkg: Add missing graphslam
+* Contributors: Jose Luis Blanco Claraco
+
 0.1.6 (2018-06-14)
 ------------------
 
