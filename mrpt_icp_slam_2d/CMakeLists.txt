@@ -1,7 +1,6 @@
 # Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
 # Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
 cmake_minimum_required(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 14)
 project(mrpt_icp_slam_2d)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
@@ -20,14 +19,11 @@ find_package(catkin REQUIRED COMPONENTS
   roslaunch)
 
 #find mrpt packages
-find_package(MRPT 1.5 REQUIRED)
+find_package(MRPT 1.5 REQUIRED gui obs slam)
 message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
-if (MRPT_VERSION VERSION_LESS 1.9.9)
-	find_package(MRPT REQUIRED base gui obs slam)
-else()
-	find_package(MRPT REQUIRED gui obs slam)
+if(MRPT_VERSION VERSION_LESS "1.9.9")
+  set (CMAKE_CXX_STANDARD 14)
 endif()
-
 
 if (CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
@@ -44,15 +40,12 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   add_compile_options(-O3)
 ENDIF()
 
-#Include directories
-INCLUDE_DIRECTORIES(
-   ${CMAKE_SOURCE_DIR}/src
-)
-
-
 catkin_package(
 	CATKIN_DEPENDS
-	nav_msgs sensor_msgs std_msgs
+  nav_msgs
+  sensor_msgs
+  std_msgs
+  visualization_msgs
 )
 
 ###########
@@ -71,7 +64,7 @@ add_executable(mrpt_icp_slam_2d
     src/mrpt_icp_slam_2d_app.cpp
 )
 
-TARGET_LINK_LIBRARIES(mrpt_icp_slam_2d ${MRPT_LIBS}
+TARGET_LINK_LIBRARIES(mrpt_icp_slam_2d ${MRPT_LIBRARIES}
     ${catkin_LIBRARIES}
 )
 
