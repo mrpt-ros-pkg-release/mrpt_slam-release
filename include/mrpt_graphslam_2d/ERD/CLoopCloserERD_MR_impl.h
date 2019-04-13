@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CLOOPCLOSERERD_MR_IMPL_H
-#define CLOOPCLOSERERD_MR_IMPL_H
+#pragma once
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -59,21 +58,14 @@ void CLoopCloserERD_MR<GRAPH_T>::fetchNodeIDsForScanMatching(
 
 	size_t fetched_nodeIDs = 0;
 	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
-			((fetched_nodeIDs <= this->m_laser_params.prev_nodes_for_ICP) &&
-			 (nodeID_i >= 0));
+			(fetched_nodeIDs <= static_cast<size_t>(this->m_laser_params.prev_nodes_for_ICP) &&
+			 nodeID_i >= 0);
 			--nodeID_i) {
-		bool is_own = this->m_engine->isOwnNodeID(nodeID_i);
-		if (is_own) {
+		if (this->m_engine->isOwnNodeID(nodeID_i)) {
 			nodes_set->insert(nodeID_i);
 			fetched_nodeIDs++;
 		}
 	}
-}
-
-
-template<class GRAPH_T>
-CLoopCloserERD_MR<GRAPH_T>::~CLoopCloserERD_MR() {
-	// CLoopCloser Dtor is automatically called.
 }
 
 // Member methods implementations
@@ -94,4 +86,3 @@ bool CLoopCloserERD_MR<GRAPH_T>::updateState(
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CLOOPCLOSERERD_MR_IMPL_H */
