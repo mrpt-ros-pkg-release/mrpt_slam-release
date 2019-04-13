@@ -1,0 +1,12 @@
+Source: ros-kinetic-mrpt-graphslam-2d
+Section: misc
+Priority: extra
+Maintainer: Nikos Koukis <nickkouk@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin, ros-kinetic-geometry-msgs, ros-kinetic-mrpt-bridge, ros-kinetic-mrpt-msgs, ros-kinetic-mrpt1, ros-kinetic-multimaster-msgs-fkie, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-rospy, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf, ros-kinetic-tf2
+Homepage: http://www.mrpt.org/
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-mrpt-graphslam-2d
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kinetic-geometry-msgs, ros-kinetic-mrpt-bridge, ros-kinetic-mrpt-msgs, ros-kinetic-mrpt1, ros-kinetic-multimaster-msgs-fkie, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-rospy, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf, ros-kinetic-tf2
+Description: Implement graphSLAM using the mrpt-graphslam library, in an online fashion by directly reading measurements off ROS Topics.
