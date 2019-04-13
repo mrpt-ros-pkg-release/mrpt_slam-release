@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CGRAPHSLAMHANDLER_ROS_IMPL_H
-#define CGRAPHSLAMHANDLER_ROS_IMPL_H
+#pragma once
 
 namespace mrpt { namespace graphslam { namespace apps {
 
@@ -215,7 +214,11 @@ void CGraphSlamHandler_ROS<GRAPH_T>::getROSParameters(std::string* str_out) {
 	(this->m_enable_visuals? "TRUE" : "FALSE")
 	<< endl;
   ss << "Logging verbosity Level   = " <<
-	COutputLogger::logging_levels_to_names[m_min_logging_level] << endl;;
+    COutputLogger::logging_levels_to_names
+#if MRPT_VERSION>=0x199
+        ()
+#endif
+        [m_min_logging_level] << endl;;
   ss << endl;
 
   *str_out = ss.str();
@@ -750,4 +753,3 @@ void CGraphSlamHandler_ROS<GRAPH_T>::resetReceivedFlags() {
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CGRAPHSLAMHANDLER_ROS_IMPL_H */
