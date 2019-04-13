@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CLOOPCLOSERERD_MR_H
-#define CLOOPCLOSERERD_MR_H
+#pragma once
 
 #include "mrpt_graphslam_2d/interfaces/CEdgeRegistrationDecider_MR.h"
 #include <mrpt_bridge/laser_scan.h>
@@ -44,9 +43,7 @@ public:
 	typedef typename GRAPH_T::global_pose_t global_pose_t;
 	/**\}*/
 
-	// Ctor, Dtor
 	CLoopCloserERD_MR();
-	~CLoopCloserERD_MR();
 
 	// member implementations
 	bool updateState(
@@ -69,4 +66,3 @@ protected:
 } } } // end of namespaces
 
 #include "CLoopCloserERD_MR_impl.h"
-#endif /* end of include guard: CLOOPCLOSERERD_MR_H */
