@@ -7,8 +7,7 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHSLAMENGINE_ROS_IMPL_H
-#define CGRAPHSLAMENGINE_ROS_IMPL_H
+#pragma once
 namespace mrpt { namespace graphslam {
 
 template<class GRAPH_t>
@@ -21,7 +20,6 @@ CGraphSlamEngine_ROS<GRAPH_t>::CGraphSlamEngine_ROS(
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = NULL */,
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = NULL */,
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = NULL */):
-	m_nh(nh),
 	parent::CGraphSlamEngine(
 			config_file,
 			rawlog_fname,
@@ -29,7 +27,8 @@ CGraphSlamEngine_ROS<GRAPH_t>::CGraphSlamEngine_ROS(
 			win_manager,
 			node_reg,
 			edge_reg,
-			optimizer)
+			optimizer),
+	m_nh(nh)
 {
 	this->initClass();
 }
@@ -43,9 +42,6 @@ CGraphSlamEngine_ROS<GRAPH_t>::~CGraphSlamEngine_ROS() {
 template<class GRAPH_t>
 void CGraphSlamEngine_ROS<GRAPH_t>::initClass() {
 	using namespace mrpt::graphslam;
-
-	ASSERT_(m_nh);
-
 	this->m_class_name = "CGraphSlamEngine_ROS";
 	this->setLoggerName(this->m_class_name);
 
@@ -141,4 +137,3 @@ void CGraphSlamEngine_ROS<GRAPH_t>::setupSrvs() {
 
 } } // end of namespaces
 
-#endif /* end of include guard: CGRAPHSLAMENGINE_ROS_IMPL_H */
