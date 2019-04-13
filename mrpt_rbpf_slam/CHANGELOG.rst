@@ -2,6 +2,27 @@
 Changelog for package mrpt_rbpf_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.9 (2019-04-14)
+------------------
+* fix build against mrpt-1.5 & 1.9.9
+* Feature/refactor mrpt rbpf slam
+* Add option to specify simplemap save path
+* Add some non zero default noise values for thrun's motion model
+* Small documentation fixes
+* Rename example file
+* Switch header guards to pragma once
+* Add launch file for turtlebot3
+* Switch default log level to INFO
+* Contributors: Jose Luis Blanco-Claraco, Julian Lopez Velasquez, Vladislav Tananaev
+
+0.1.8 (2018-09-21)
+------------------
+* Make catkin_lint clean
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.7 (2018-09-20)
+------------------
+
 0.1.6 (2018-06-14)
 ------------------
 * Merge pull request `#42 <https://github.com/mrpt-ros-pkg/mrpt_slam/issues/42>`_ from MaxGsomGsom/master

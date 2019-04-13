@@ -1,7 +1,6 @@
 # Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
 # Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
 cmake_minimum_required(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 14)
 project(mrpt_graphslam_2d)
 
 ## Find catkin macros and libraries
@@ -21,16 +20,12 @@ find_package(catkin REQUIRED COMPONENTS
   multimaster_msgs_fkie
   )
 ## System dependencies are found with CMake's conventions
-find_package(MRPT 1.5 REQUIRED)
+find_package(MRPT 1.5 REQUIRED gui obs maps opengl graphslam)
 message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
-if (MRPT_VERSION VERSION_LESS 1.9.9)
-	find_package(MRPT REQUIRED base gui obs maps opengl graphslam)
-else()
-	find_package(MRPT REQUIRED gui obs maps opengl graphslam)
-endif()
 
-if (MRPT_VERSION VERSION_LESS 2.0.0)
-	set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations ${CMAKE_CXX_FLAGS}")
+if (MRPT_VERSION VERSION_LESS "1.9.9")
+  set (CMAKE_CXX_STANDARD 14)
+#	add_compile_options(-Wno-deprecated-declarations)
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -61,7 +56,7 @@ ENDIF()
 ###################################
 
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   #LIBRARIES mrpt_graphslam_2d
   CATKIN_DEPENDS
   roscpp
@@ -124,19 +119,19 @@ else()
 
   ## Specify libraries to link a library or executable target against
   target_link_libraries(${PROJECT_NAME}
-    ${MRPT_LIBS}
+    ${MRPT_LIBRARIES}
     ${catkin_LIBRARIES}
     )
   target_link_libraries(${PROJECT_NAME}_node
-    ${MRPT_LIBS}
+    ${MRPT_LIBRARIES}
     ${catkin_LIBRARIES}
     )
   target_link_libraries(${PROJECT_NAME}_mr_node
-    ${MRPT_LIBS}
+    ${MRPT_LIBRARIES}
     ${catkin_LIBRARIES}
     )
   target_link_libraries(map_merger_node
-  	${MRPT_LIBS}
+  	${MRPT_LIBRARIES}
   	${catkin_LIBRARIES}
   	)
 
@@ -155,7 +150,6 @@ else()
   # Mark other files for installation (e.g. launch and bag files, etc.)
   install(DIRECTORY
     launch
-    demo
     config
     rviz
     rosbags

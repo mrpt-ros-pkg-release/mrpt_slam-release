@@ -2,6 +2,25 @@
 Changelog for package mrpt_graphslam_2d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.9 (2019-04-14)
+------------------
+* Fix build against MRPT 1.9.9
+* Switch header guards to pragma once
+* Contributors: Jose Luis Blanco-Claraco, Julian Lopez Velasquez, Vladislav Tananaev
+
+0.1.8 (2018-09-21)
+------------------
+* Make catkin_lint clean
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.7 (2018-09-20)
+------------------
+* mrpt_graphslam_2d: Fix compilation warnings
+* Remove installation of the demo directory from mrpt_graphslam_2d.
+  It doesn't exist, so causes problems at the last stage of cmake.
+  Signed-off-by: Chris Lalancette <clalancette@openrobotics.org>
+* Contributors: Chris Lalancette, Jose Luis Blanco-Claraco, Nikos Koukis
+
 0.1.6 (2018-06-14)
 ------------------
 * Fixed compilation with MRPT 1.5
