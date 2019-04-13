@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef TNEIGHBORAGENTMAPPROPS_H
-#define TNEIGHBORAGENTMAPPROPS_H
+#pragma once
 
 #include <ros/ros.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -52,6 +51,7 @@ struct TNeighborAgentMapProps
 	 */
 	size_t getNodeCount() { return nav_robot_trajectory->poses.size(); }
 
+	mrpt::utils::COutputLogger* m_logger;
 	ros::NodeHandle* nh;
 	/**\brief Pointer to the GraphSlamAgent instance of the neighbor */
 	const mrpt_msgs::GraphSlamAgent& agent;
@@ -74,11 +74,9 @@ struct TNeighborAgentMapProps
 	size_t queue_size;
 	bool has_init_class;
 	bool has_setup_comm;
-	mrpt::utils::COutputLogger* m_logger;
 
 
 }; // end of TNeighborAgentMapProps
 
 } } // end of namespaces
 
-#endif /* end of include guard: TNEIGHBORAGENTMAPPROPS_H */
