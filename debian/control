@@ -1,0 +1,12 @@
+Source: ros-kinetic-mrpt-ekf-slam-2d
+Section: misc
+Priority: extra
+Maintainer: Jose Luis <jlblanco@ual.es>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin, ros-kinetic-dynamic-reconfigure, ros-kinetic-mrpt-bridge, ros-kinetic-mrpt1, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-roslaunch, ros-kinetic-roslib, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf, ros-kinetic-visualization-msgs
+Homepage: http://mrpt.org/
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-mrpt-ekf-slam-2d
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kinetic-dynamic-reconfigure, ros-kinetic-mrpt-bridge, ros-kinetic-mrpt-rawlog, ros-kinetic-mrpt1, ros-kinetic-nav-msgs, ros-kinetic-roscpp, ros-kinetic-roslaunch, ros-kinetic-roslib, ros-kinetic-rviz, ros-kinetic-sensor-msgs, ros-kinetic-std-msgs, ros-kinetic-tf, ros-kinetic-visualization-msgs
+Description: This package is a wrapper for the implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot pose, and 2D landmarks.
