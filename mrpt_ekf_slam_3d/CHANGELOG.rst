@@ -2,6 +2,13 @@
 Changelog for package mrpt_ekf_slam_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.11 (2022-06-24)
+-------------------
+* Ported to tf2 and mrpt::ros1bridge
+* Fixed all 2D and 3D EKF wrappers to work with mrpt 2.x API
+* Update build dep to mrpt2
+* Contributors: Jose Luis Blanco Claraco
+
 0.1.10 (2019-10-05)
 -------------------
 * fix build against mrpt2
@@ -53,7 +60,7 @@ Changelog for package mrpt_ekf_slam_3d
 * Make formatting conform to ROS C++ Style Guide.
 * fix eigen3 dependency problem
 * Output logs only in ROS.
-* Add a guard for new mrpt_bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt_bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
+* Add a guard for new mrpt::ros1bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt::ros1bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
 * Add streaming of MRPT logs to ROS logs.
 * Contributors: Jose Luis Blanco, Logrus, Vladislav Tananaev
 

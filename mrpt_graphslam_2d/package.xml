@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mrpt_graphslam_2d</name>
-  <version>0.1.10</version>
+  <version>0.1.11</version>
   <description>
   	Implement graphSLAM using the mrpt-graphslam library, in an online fashion
   	by directly reading measurements off ROS Topics.
   </description>
 
   <url type="website">http://www.mrpt.org/</url>
-  <url type="documentation">http://wiki.ros.org/mrpt_slam</url>
+  <url type="documentation">https://wiki.ros.org/mrpt_slam</url>
   <maintainer email="nickkouk@gmail.com">Nikos Koukis</maintainer>
+  <maintainer email="joseluisblancoc@gmail.com">Jose Luis Blanco-Claraco</maintainer>
   <author email="nickkouk@gmail.com">Nikos Koukis</author>
   <license>BSD</license>
 
@@ -21,12 +22,13 @@
   <depend>nav_msgs</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>mrpt1</depend>
-  <depend>mrpt_bridge</depend>
+  <depend>mrpt2</depend>
   <depend>mrpt_msgs</depend>
-  <depend>tf</depend>
+  <depend>mrpt_msgs_bridge</depend>
   <depend>tf2</depend>
-  <depend>multimaster_msgs_fkie</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>fkie_multimaster_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
