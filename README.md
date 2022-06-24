@@ -1,3 +1,32 @@
+## mrpt_slam (melodic) - 0.1.11-1
+
+The packages in the `mrpt_slam` repository were released into the `melodic` distro by running `/usr/bin/bloom-release --rosdistro melodic -e -y mrpt_slam` on `Fri, 24 Jun 2022 13:05:58 -0000`
+
+These packages were released:
+- `mrpt_ekf_slam_2d`
+- `mrpt_ekf_slam_3d`
+- `mrpt_graphslam_2d`
+- `mrpt_icp_slam_2d`
+- `mrpt_rbpf_slam`
+- `mrpt_slam`
+
+Version of package(s) in repository `mrpt_slam`:
+
+- upstream repository: https://github.com/mrpt-ros-pkg/mrpt_slam.git
+- release repository: https://github.com/mrpt-ros-pkg-release/mrpt_slam-release.git
+- rosdistro version: `0.1.10-1`
+- old version: `0.1.10-1`
+- new version: `0.1.11-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.1`
+- catkin_pkg version: `0.5.2`
+- rosdep version: `0.21.0`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## mrpt_slam (kinetic) - 0.1.10-1
 
 The packages in the `mrpt_slam` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release --rosdistro kinetic --track kinetic mrpt_slam` on `Sat, 05 Oct 2019 22:42:03 -0000`
