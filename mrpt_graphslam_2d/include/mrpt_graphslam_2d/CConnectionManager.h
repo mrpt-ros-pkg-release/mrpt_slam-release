@@ -1,21 +1,20 @@
 /* +---------------------------------------------------------------------------+
-	 |                     Mobile Robot Programming Toolkit (MRPT)               |
-	 |                          http://www.mrpt.org/                             |
-	 |                                                                           |
-	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-	 | Released under BSD License. See details in http://www.mrpt.org/License    |
-	 +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT) | |
+   http://www.mrpt.org/                             | | | | Copyright (c)
+   2005-2016, Individual contributors, see AUTHORS file        | | See:
+   http://www.mrpt.org/Authors - All rights reserved.                   | |
+   Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+
+ */
 
 #pragma once
 
 #include <ros/ros.h>
-#include <multimaster_msgs_fkie/DiscoverMasters.h>
+#include <fkie_multimaster_msgs/DiscoverMasters.h>
 #include <mrpt_msgs/GraphSlamAgent.h>
 #include <mrpt_msgs/GraphSlamAgents.h>
-#include <mrpt_bridge/mrpt_bridge.h>
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
@@ -29,27 +28,31 @@
 
 #include <cstdlib>
 
-namespace mrpt { namespace graphslam { namespace detail {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace detail
+{
 /**\brief Class responsible of handling the network communication between SLAM
  * agents in the Multi-Robot graphSLAM algorithm.
  */
 class CConnectionManager
 {
-public:
-	//typedef std::vector<mrpt_msgs::GraphSlamAgent>::iterator agents_it;
-	//typedef std::vector<mrpt_msgs::GraphSlamAgent>::const_iterator agents_cit;
+   public:
+	// typedef std::vector<mrpt_msgs::GraphSlamAgent>::iterator agents_it;
+	// typedef std::vector<mrpt_msgs::GraphSlamAgent>::const_iterator
+	// agents_cit;
 	typedef mrpt_msgs::GraphSlamAgents::_list_type::iterator agents_it;
 	typedef mrpt_msgs::GraphSlamAgents::_list_type::const_iterator agents_cit;
 
 	/**\brief Constructor */
 	CConnectionManager(
-			mrpt::utils::COutputLogger* logger,
-			ros::NodeHandle* nh_in);
+		mrpt::system::COutputLogger* logger, ros::NodeHandle* nh_in);
 	/**\brief Destructor */
 	~CConnectionManager();
-	/**\brief Fill the given vector with the SLAM Agents that the current manager
-	 * can see and communicate with
+	/**\brief Fill the given vector with the SLAM Agents that the current
+	 * manager can see and communicate with
 	 *
 	 * \param[in] ignore_self If true the GraphSlamAgent instance that is under
 	 * the same  namespace as the CConnectionManager is not going to be inserted
@@ -57,16 +60,16 @@ public:
 	 *
 	 * \sa updateNearbySlamAgents
 	 */
-	void getNearbySlamAgents(mrpt_msgs::GraphSlamAgents* agents_vec,
-			bool ignore_self=true);
+	void getNearbySlamAgents(
+		mrpt_msgs::GraphSlamAgents* agents_vec, bool ignore_self = true);
 	/**\brief Read-only method for accessing list of nearby agents
 	 */
-	const mrpt_msgs::GraphSlamAgents&  getNearbySlamAgents();
+	const mrpt_msgs::GraphSlamAgents& getNearbySlamAgents();
 	/**\brief Read-only method for accessing list of nearby agents.
 	 * This <b>doesn't update</b> the internal list of GraphSlamAgents but just
 	 * the returns its latest cached version
 	 */
-	const mrpt_msgs::GraphSlamAgents&  getNearbySlamAgentsCached() const;
+	const mrpt_msgs::GraphSlamAgents& getNearbySlamAgentsCached() const;
 
 	/**\brief Wrapper method around the private setup* class methods.
 	 *
@@ -78,7 +81,7 @@ public:
 	/**\brief Get the agent ROS namespace */
 	const std::string& getTrimmedNs() const;
 
-private:
+   private:
 	/**\brief Namespace under which we are running. Corresponds to the
 	 * agent_ID_str with which the nodes are going to be registered in the graph
 	 */
@@ -100,7 +103,6 @@ private:
 	void setupSrvs();
 	/**\}*/
 
-
 	/**\brief ROSMaster ==> mrpt_msgs::GraphSlamAgent
 	 *
 	 * Assumption is that each ROSMaster instance holds exactly one
@@ -112,22 +114,23 @@ private:
 	 * namespace under its main topic namespace
 	 */
 	static bool convert(
-			const multimaster_msgs_fkie::ROSMaster& ros_master,
-			mrpt_msgs::GraphSlamAgent* slam_agent);
+		const fkie_multimaster_msgs::ROSMaster& ros_master,
+		mrpt_msgs::GraphSlamAgent* slam_agent);
 	/**\brief GraphSlamAgent ==> ROSMaster. */
 	static void convert(
-			const mrpt_msgs::GraphSlamAgent& slam_agent,
-			multimaster_msgs_fkie::ROSMaster* ros_master);
-	/**\brief Remove http:// prefix and port suffix from the string and return result
+		const mrpt_msgs::GraphSlamAgent& slam_agent,
+		fkie_multimaster_msgs::ROSMaster* ros_master);
+	/**\brief Remove http:// prefix and port suffix from the string and return
+	 * result
 	 *
 	 * \param[out] agent_port Port that the agent is running on. Extracted from
 	 * the overall string
 	 */
-	static std::string extractHostnameOrIP(const std::string& str,
-			unsigned short* agent_port=NULL);
+	static std::string extractHostnameOrIP(
+		const std::string& str, unsigned short* agent_port = NULL);
 
 	/**\brief Pointer to the logging instance */
-	mrpt::utils::COutputLogger* m_logger;
+	mrpt::system::COutputLogger* m_logger;
 	/**\brief Pointer to the Ros NodeHanle instance */
 	ros::NodeHandle* m_nh;
 
@@ -140,36 +143,37 @@ private:
 	mrpt_msgs::GraphSlamAgents m_nearby_slam_agents;
 
 	bool has_setup_comm;
-
 };
 
-} } } // end of namespaces
+}  // namespace detail
+}  // namespace graphslam
+}  // namespace mrpt
 
 /**\brief ROSMaster instances are considered the same if the "uri" field is the
  * same
  */
 /**\{*/
 bool operator==(
-		const multimaster_msgs_fkie::ROSMaster& master1,
-		const multimaster_msgs_fkie::ROSMaster& master2);
+	const fkie_multimaster_msgs::ROSMaster& master1,
+	const fkie_multimaster_msgs::ROSMaster& master2);
 bool operator!=(
-		const multimaster_msgs_fkie::ROSMaster& master1,
-		const multimaster_msgs_fkie::ROSMaster& master2);
+	const fkie_multimaster_msgs::ROSMaster& master1,
+	const fkie_multimaster_msgs::ROSMaster& master2);
 /**\{*/
 
-/**\brief GraphSlamAgent instances are considered the same if the "agent_ID" field is the
- * same and the topic_namespace is the same
+/**\brief GraphSlamAgent instances are considered the same if the "agent_id"
+ * field is the same and the topic_namespace is the same
  */
 /**\{*/
 bool operator==(
-		const mrpt_msgs::GraphSlamAgent& agent1,
-		const mrpt_msgs::GraphSlamAgent& agent2);
+	const mrpt_msgs::GraphSlamAgent& agent1,
+	const mrpt_msgs::GraphSlamAgent& agent2);
 bool operator!=(
-		const mrpt_msgs::GraphSlamAgent& agent1,
-		const mrpt_msgs::GraphSlamAgent& agent2);
+	const mrpt_msgs::GraphSlamAgent& agent1,
+	const mrpt_msgs::GraphSlamAgent& agent2);
 bool operator<(
-		const mrpt_msgs::GraphSlamAgent& agent1,
-		const mrpt_msgs::GraphSlamAgent& agent2);
+	const mrpt_msgs::GraphSlamAgent& agent1,
+	const mrpt_msgs::GraphSlamAgent& agent2);
 /**\}*/
 
 /**\brief GraphSlamAgent and ROSMaster instances are considered the same if the
@@ -177,17 +181,16 @@ bool operator<(
  */
 /**\{*/
 bool operator==(
-		const multimaster_msgs_fkie::ROSMaster& master,
-		const mrpt_msgs::GraphSlamAgent& agent);
+	const fkie_multimaster_msgs::ROSMaster& master,
+	const mrpt_msgs::GraphSlamAgent& agent);
 bool operator==(
-		const mrpt_msgs::GraphSlamAgent& agent,
-		const multimaster_msgs_fkie::ROSMaster& master);
+	const mrpt_msgs::GraphSlamAgent& agent,
+	const fkie_multimaster_msgs::ROSMaster& master);
 bool operator!=(
-		const multimaster_msgs_fkie::ROSMaster& master,
-		const mrpt_msgs::GraphSlamAgent& agent);
+	const fkie_multimaster_msgs::ROSMaster& master,
+	const mrpt_msgs::GraphSlamAgent& agent);
 bool operator!=(
-		const mrpt_msgs::GraphSlamAgent& agent,
-		const multimaster_msgs_fkie::ROSMaster& master);
+	const mrpt_msgs::GraphSlamAgent& agent,
+	const fkie_multimaster_msgs::ROSMaster& master);
 
 /**\}*/
-
