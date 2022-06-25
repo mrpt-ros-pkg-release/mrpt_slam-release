@@ -2,6 +2,22 @@
 Changelog for package mrpt_rbpf_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.12 (2022-06-25)
+-------------------
+
+0.1.11 (2022-06-24)
+-------------------
+* Ported to tf2 and mrpt::ros1bridge
+* Coarser grid resolution
+* fix build with mrpt2
+* Fixed all 2D and 3D EKF wrappers to work with mrpt 2.x API
+* Update URLs to https
+* Update build dep to mrpt2
+* Merge pull request `#62 <https://github.com/mrpt-ros-pkg/mrpt_slam/issues/62>`_ from mx-robotics/master
+  Flag added to switch between a static and moving sensor
+* Flag added to switch between a static and moving sensor
+* Contributors: Jose Luis Blanco-Claraco, Markus Bader
+
 0.1.10 (2019-10-05)
 -------------------
 * fix build against mrpt2
@@ -76,7 +92,7 @@ Changelog for package mrpt_rbpf_slam
 * Fix missing CObservationBeaconRanges.h include in mrpt_rbpf_slam.
 * Fix description of the rbpf package.
 * Output logs only in ROS.
-* Add a guard for new mrpt_bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt_bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
+* Add a guard for new mrpt::ros1bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt::ros1bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
 * Add streaming of MRPT logs to ROS logs.
 * Update example config files with new localizeLinDistance and localizeAngDistance_deg.
 * Fix build against MRPT<1.3.0
