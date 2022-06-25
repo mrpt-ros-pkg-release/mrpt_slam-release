@@ -2,6 +2,20 @@
 Changelog for package mrpt_ekf_slam_2d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.12 (2022-06-25)
+-------------------
+
+0.1.11 (2022-06-24)
+-------------------
+* Ported to tf2 and mrpt::ros1bridge
+* Fixed all 2D and 3D EKF wrappers to work with mrpt 2.x API
+* Update build dep to mrpt2
+* Merge pull request `#63 <https://github.com/mrpt-ros-pkg/mrpt_slam/issues/63>`_ from reinzor/patch-1
+  fix(CMakeLists.txt): Install rviz and config dir
+* fix(CMakeLists.txt): Install rviz and config dir
+  Required for running the example launch files
+* Contributors: Jose Luis Blanco-Claraco, Rein Appeldoorn
+
 0.1.10 (2019-10-05)
 -------------------
 * fix build against mrpt2
@@ -54,7 +68,7 @@ Changelog for package mrpt_ekf_slam_2d
 ------------------
 * Make formatting conform to ROS C++ Style Guide.
 * Output logs only in ROS.
-* Add a guard for new mrpt_bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt_bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
+* Add a guard for new mrpt::ros1bridge::rosLoggerLvlToMRPTLoggerLvl and mrpt::ros1bridge::mrptToROSLoggerCallback functions for MRPT version less than 1.5.0.
 * Add streaming of MRPT logs to ROS logs.
 * Contributors: Logrus, Vladislav Tananaev
 
