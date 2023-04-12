@@ -2,6 +2,23 @@
 Changelog for package mrpt_graphslam_2d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.13 (2023-04-07)
+-------------------
+* Fix build against last mrpt 2.7.x
+* Contributors: Jose Luis Blanco-Claraco
+
+0.1.12 (2022-06-24)
+-------------------
+
+0.1.14 (2023-04-12)
+-------------------
+* 0.1.13
+* fix version
+* changelog
+* Fix build against last mrpt 2.7.x
+* chagelogs
+* Contributors: Jose Luis Blanco Claraco, Jose Luis Blanco-Claraco
+
 0.1.11 (2022-06-24)
 -------------------
 * Ported to tf2 and mrpt::ros1bridge
