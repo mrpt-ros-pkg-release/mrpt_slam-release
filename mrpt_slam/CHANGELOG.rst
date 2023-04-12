@@ -2,6 +2,11 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.14 (2023-04-12)
+-------------------
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 0.1.11 (2022-06-24)
 -------------------
 

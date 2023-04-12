@@ -2,6 +2,11 @@
 Changelog for package mrpt_ekf_slam_2d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.14 (2023-04-12)
+-------------------
+* Fix build against last mrpt 2.7.x
+* Contributors: Jose Luis Blanco-Claraco
+
 0.1.11 (2022-06-24)
 -------------------
 * Ported to tf2 and mrpt::ros1bridge
