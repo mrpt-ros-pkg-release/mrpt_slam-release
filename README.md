@@ -1,3 +1,32 @@
+## mrpt_slam (noetic) - 0.1.17-1
+
+The packages in the `mrpt_slam` repository were released into the `noetic` distro by running `/usr/bin/bloom-release -r noetic -y mrpt_slam` on `Wed, 05 Jun 2024 08:43:41 -0000`
+
+These packages were released:
+- `mrpt_ekf_slam_2d`
+- `mrpt_ekf_slam_3d`
+- `mrpt_graphslam_2d`
+- `mrpt_icp_slam_2d`
+- `mrpt_rbpf_slam`
+- `mrpt_slam`
+
+Version of package(s) in repository `mrpt_slam`:
+
+- upstream repository: https://github.com/mrpt-ros-pkg/mrpt_slam.git
+- release repository: https://github.com/mrpt-ros-pkg-release/mrpt_slam-release.git
+- rosdistro version: `0.1.16-1`
+- old version: `0.1.16-1`
+- new version: `0.1.17-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.24.0`
+- rosdistro version: `0.9.1`
+- vcstools version: `0.1.42`
+
+
 ## mrpt_slam (noetic) - 0.1.16-1
 
 The packages in the `mrpt_slam` repository were released into the `noetic` distro by running `/home/jlblanco/code/bloom-venv/bin/bloom-release -y -r noetic mrpt_slam` on `Mon, 25 Mar 2024 18:53:50 -0000`
