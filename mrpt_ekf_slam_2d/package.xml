@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mrpt_ekf_slam_2d</name>
-  <version>0.1.17</version>
+  <version>0.1.18</version>
   <description>This package is a wrapper for the implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot pose, and 2D landmarks.</description>
   <maintainer email="joseluisblancoc@gmail.com">Jose Luis Blanco-Claraco</maintainer>
 
@@ -27,7 +27,9 @@
   <depend>visualization_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>dynamic_reconfigure</depend>
-  <depend>mrpt2</depend>
+  <depend>mrpt_libros_bridge</depend>
+  <depend>mrpt_libgui</depend>
+  <depend>mrpt_libslam</depend>
   <depend>mrpt_msgs_bridge</depend>
 
   <exec_depend>rviz</exec_depend>
