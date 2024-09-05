@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mrpt_rbpf_slam</name>
-  <version>0.1.17</version>
+  <version>0.1.18</version>
   <description>This package is used for gridmap SLAM. The interface is similar to gmapping (https://wiki.ros.org/gmapping) but the package supports different particle-filter algorithms, range-only SLAM, can work with several grid maps simultaneously and more.</description>
 
   <url type="website">http://www.mrpt.org/</url>
@@ -16,7 +16,9 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>dynamic_reconfigure</depend>
-  <depend>mrpt2</depend>
+  <depend>mrpt_libros_bridge</depend>
+  <depend>mrpt_libgui</depend>
+  <depend>mrpt_libslam</depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
   <depend>roslaunch</depend>
